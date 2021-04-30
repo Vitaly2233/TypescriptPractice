@@ -5,5 +5,5 @@ const app = express();
 
 app.use("/home", auth)
 app.listen(3001, async () => {
-    console.log("Listening on port 3001")
+    console.log("Listening on port 3001");
 })

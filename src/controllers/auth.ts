@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
-import conToDb from "../connections/userDB"
+import * as connection from "../connections/userDB"
 
+let con:any;
 class auth {
-    async registration(req:any, res:any) {
-        console.log("Hello");
-        let a = (await conToDb)();
-        console.log(a)
-    }
+  async registration(req: any, res: any) {
+    con = await connection.conToDb();
+  }
 }
 
 export default new auth();
