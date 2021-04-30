@@ -1,31 +1,9 @@
-interface TLength {
-    length: number
-}
+import express from "express";
+import auth from "./routers/auth";
 
-function getLength<T extends TLength>(value: T): { value: T, count: string } {
-    return {
-        value,
-        count: `Object has ${value.length} symbols`
-    }
-}
+const app = express();
 
-console.log(getLength("dfsdf"));
-
-
-class objectCollection<T extends object> {
-    private _objects: object[] = [];
-
-    addObject(obj: object) {
-        this._objects.push(obj);
-    }
-    seeAllObjects() {
-        return this._objects;
-    }
-
-}
-
-const obj = new objectCollection();
-console.log(obj.seeAllObjects())
-obj.addObject({name: "vitaly"});
-obj.addObject({age: 17});
-console.log(obj.seeAllObjects())
+app.use("/home", auth)
+app.listen(3001, async () => {
+    console.log("Listening on port 3001")
+})
