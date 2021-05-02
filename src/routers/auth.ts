@@ -3,6 +3,6 @@ import controller from "../controllers/auth"
 
 const route = express();
 
-route.get("/register", controller.registration)
+route.post("/register", controller.registration)
 
 export default route
