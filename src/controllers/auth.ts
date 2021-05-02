@@ -1,29 +1,64 @@
-import jwt from "jsonwebtoken";
-import express from "express";
+import jwt, {Secret} from "jsonwebtoken";
+import express, {Request, Response} from "express";
+
+const app: express.Application = express();
 const bcrypt = require("bcryptjs");
+// secretValue
+import {IKey, Key} from "../models/secretKey"
 //models
-import {User} from "../models/newUser";
+import {User, IUser} from "../models/newUser";
 
 class auth {
-  async registration(req: express.Request, res: express.Response): Promise<void> {
+  async registration(req: Request, res: Response): Promise<void> {
     const {username, password} = req.body
-    console.log(req.body)
     if (username === undefined || password === undefined) {
       res.status(403).json({message: "'username' and 'password' keys are missing"});
       return;
     }
-    const result = await User.findOne({username: username})
+    const result: IUser | null = await User.findOne({username: username})
     if (!result) {
-      const hashedPas = bcrypt.hashSync(password, 7);
+      // add some roles for users sooner
+      let userRole: String[] = ["user"];
+      const hashedPass: String = bcrypt.hashSync(password, 7);
       const newUser = new User({
         username: username,
-        password: hashedPas
+        password: hashedPass,
+        roles: userRole
       });
       await newUser.save();
       res.status(201).json({message: "Created user"});
       return;
     }
     res.status(409).json({message: "can't add user"});
+  }
+
+  async login(req: Request, res: Response): Promise<void> {
+    const {username, password} = req.body
+    // getting user from database
+    const result: IUser | null = await User.findOne({username: username});
+    if (!result) {
+      res.status(400).json({message: "Can't find the user"});
+      return
+    }
+    //comparing if passwords are same
+    const validPassword: boolean = bcrypt.compareSync(password, result.password);
+    if (validPassword) {
+      const secretObj:any = await Key.findOne({});
+      const secretWord: string = secretObj.secretValue;
+      if (!secretWord) {
+        await app.get("/http://localhost:3001/generate_secret_key");
+        res.status(500).json({message: "Something wrong with the server, please try again"})
+        return
+      }
+      const userInform = {
+        username: username,
+        roles: result.roles
+      }
+      const token = jwt.sign(userInform, secretWord, {expiresIn: '15m'})
+      res.status(201).json({token: token})
+      return;
+    }
+
   }
 }
 
