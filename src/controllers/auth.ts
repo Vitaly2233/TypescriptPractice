@@ -20,7 +20,7 @@ class auth {
       // add some roles for users sooner
       let userRole: String[] = ["user"];
       const hashedPass: String = bcrypt.hashSync(password, 7);
-      const newUser = new User({
+      const newUser: IUser = new User({
         username: username,
         password: hashedPass,
         roles: userRole
@@ -29,7 +29,7 @@ class auth {
       res.status(201).json({message: "Created user"});
       return;
     }
-    res.status(409).json({message: "can't add user"});
+    res.status(409).json({message: "can't add user, there is already user with that username"});
   }
 
   async login(req: Request, res: Response): Promise<void> {
@@ -54,11 +54,10 @@ class auth {
         username: username,
         roles: result.roles
       }
-      const token = jwt.sign(userInform, secretWord, {expiresIn: '15m'})
+      const token = jwt.sign(userInform, secretWord, {expiresIn: '30m'})
       res.status(201).json({token: token})
       return;
     }
-
   }
 }
 

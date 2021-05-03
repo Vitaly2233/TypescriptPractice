@@ -1,5 +1,8 @@
 import express from "express";
-import auth from "./routers/auth";
+// routes
+import authRoute from "./routers/auth";
+import postsRoute from "./routers/posts";
+// database
 import mongoose from "mongoose"
 import bodyParser from "body-parser"
 import {generateKey} from "./routers/secretKey";
@@ -22,11 +25,14 @@ async function conToDb(): Promise<void> {
   }
 }
 
-//routes
+// connecting bodyparser
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use("/home", auth)
-app.get("/generate_secret_key", generateKey)
+
+//routes
+app.use("/home", authRoute);
+app.use("/posts", postsRoute)
+app.use("/generate_secret_key", generateKey)
 
 app.listen(3001, async () => {
   await conToDb();

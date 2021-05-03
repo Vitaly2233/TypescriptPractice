@@ -1,10 +1,11 @@
-import {model, Schema, Document} from 'mongoose';
+import {model, Schema, Document, Model} from 'mongoose';
 
 export interface IKey extends Document {
   secretValue: string
 }
 
-const KeySchema = new Schema({
+const KeySchema: Schema = new Schema({
   secretValue: String
 });
-export const Key = model<IKey>('SecretKey', KeySchema);
+
+export const Key:Model<IKey>= model('SecretKey', KeySchema);
