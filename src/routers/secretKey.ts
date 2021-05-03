@@ -12,9 +12,9 @@ export async function generateKey(req: Request, res: Response) {
   }
 }
 
-function makeKey(): String {
+function makeKey(): string {
   let result: Array<string> = [];
-  let characters: String = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < characters.length; i++) {
     result.push(characters.charAt(Math.floor(Math.random() * characters.length)));
   }

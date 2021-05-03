@@ -4,9 +4,10 @@ import {Key, IKey} from "../models/secretKey";
 
 interface IUser extends Object {
   username: string;
-  roles: String[];
+  roles: string[];
+  _id: string;
 }
-export const tokenAndRoleChecker = function (allowedRoles: String[]) {
+export const tokenAndRoleChecker = function (allowedRoles: string[]) {
   return async function (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       if (req.headers.authorization) {
@@ -22,8 +23,7 @@ export const tokenAndRoleChecker = function (allowedRoles: String[]) {
             user.roles.forEach((userRole) => {
               if (role === userRole) {
                 console.log("entering is allowed");
-                req.userRole = user.roles;
-                req.username = user.username;
+                req.user = {username: user.username, roles: user.roles, _id: user._id};
                 next();
               }
             })

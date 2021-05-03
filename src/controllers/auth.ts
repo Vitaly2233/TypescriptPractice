@@ -18,8 +18,8 @@ class auth {
     const result: IUser | null = await User.findOne({username: username})
     if (!result) {
       // add some roles for users sooner
-      let userRole: String[] = ["user"];
-      const hashedPass: String = bcrypt.hashSync(password, 7);
+      let userRole: string[] = ["user"];
+      const hashedPass: string = bcrypt.hashSync(password, 7);
       const newUser: IUser = new User({
         username: username,
         password: hashedPass,
@@ -52,7 +52,8 @@ class auth {
       }
       const userInform = {
         username: username,
-        roles: result.roles
+        roles: result.roles,
+        _id: result._id
       }
       const token = jwt.sign(userInform, secretWord, {expiresIn: '30m'})
       res.status(201).json({token: token})
