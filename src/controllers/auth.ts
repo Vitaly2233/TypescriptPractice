@@ -55,7 +55,7 @@ class auth {
         roles: result.roles,
         _id: result._id
       }
-      const token = jwt.sign(userInform, secretWord, {expiresIn: '30m'})
+      const token = jwt.sign(userInform, secretWord, {expiresIn: '1d'})
       res.status(201).json({token: token})
       return;
     }
