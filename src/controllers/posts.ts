@@ -1,14 +1,19 @@
-import {User, IUser} from "../models/newUser";
-import express, {NextFunction, Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import {IPost, Post} from "../models/post";
 
+// interfaces
 interface IChangePost {
   postName: string;
   newName?: string;
   newDescription?: string;
   owner?: string;
 }
+interface IDeletePost{
+  postName: string;
+  owner?: string;
+}
 
+//controllers functions
 export const seePosts = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
   const myPosts: IPost[] = await Post.find({user: username});
@@ -47,12 +52,15 @@ export const changePost = async (req: Request, res: Response): Promise<Response>
   return res.status(200).json({message: "Updated post"});
 }
 
-
-export const deletePost = async (req: Request, res: Response): Promise<void> => {
-
+export const deletePost = async (req: Request, res: Response): Promise<Response> => {
+  const username = req.user.username;
+  const { postName, owner}: IDeletePost = req.body;
+  const deleted:IDeletePost | null = await Post.findOneAndDelete({user: username, postName: postName})
+  if (deleted) return res.status(200).json({message: "deleted post"});
+  else return res.status(404).json({message: "Can't delete post, probably you wrote wrong name of your post"});
 }
 
-// Functions
+// Functions for better looking code
 async function updateOne(find: object, options: object): Promise<IPost | null> {
   return Post.findOneAndUpdate(find, options);
 }
