@@ -2,10 +2,16 @@ import {User, IUser} from "../models/newUser";
 import express, {NextFunction, Request, Response} from "express";
 import {IPost, Post} from "../models/post";
 
+interface IChangePost {
+  postName: string;
+  newName?: string;
+  newDescription?: string;
+  owner?: string;
+}
+
 export const seePosts = async (req: Request, res: Response): Promise<Response> => {
-  const {postName, description} = req.body;
   const username = req.user.username;
-  const myPosts:IPost[] = await Post.find({user: username});
+  const myPosts: IPost[] = await Post.find({user: username});
   return res.json(myPosts)
 }
 
@@ -29,10 +35,24 @@ export const addPost = async (req: Request, res: Response, next: NextFunction): 
   return res.status(200).json({message: "post is saved"})
 }
 
-export const changePost = async (req: Request, res: Response): Promise<void> => {
-
+export const changePost = async (req: Request, res: Response): Promise<Response> => {
+  const username = req.user.username;
+  const {newDescription, newName, postName}: IChangePost = req.body;
+  let updated: IPost | null;
+  if (!newName)
+    updated = await updateOne({user: username, postName: postName}, {description: newDescription});
+  else
+    updated = await updateOne({user: username, postName: postName}, {description: newDescription, postName: newName});
+  if (!updated) return res.status(404).json({message: "Post with the name doesn't exist"});
+  return res.status(200).json({message: "Updated post"});
 }
+
 
 export const deletePost = async (req: Request, res: Response): Promise<void> => {
 
+}
+
+// Functions
+async function updateOne(find: object, options: object): Promise<IPost | null> {
+  return Post.findOneAndUpdate(find, options);
 }
