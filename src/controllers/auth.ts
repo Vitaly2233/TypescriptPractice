@@ -22,6 +22,7 @@ class auth {
 
     // add some roles for users sooner
     let userRole: string[] = ["user"];
+
     const hashedPass: string = bcrypt.hashSync(password, 7);
     const newUser: IUser = new User({
       username: username,

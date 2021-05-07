@@ -14,13 +14,18 @@ interface IDeletePost {
 }
 
 //controllers functions
+export const seeAllPosts = async (req: Request, res: Response): Promise<Response> => {
+  const allPosts:IPost[]  = await Post.find({});
+  return res.status(200).json(allPosts)
+}
+
 export const seePosts = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
   const myPosts: IPost[] = await Post.find({user: username});
   return res.json(myPosts)
 }
 
-export const addPost = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+export const addPost = async (req: Request, res: Response, next: NextFunction): Promise<Response | any> => {
   const {postName, description} = req.body;
   const username = req.user.username;
 
@@ -34,27 +39,30 @@ export const addPost = async (req: Request, res: Response, next: NextFunction): 
   const newPost: IPost = new Post({
     user: username,
     postName: postName,
-    description: description
+    description: description,
+    date: Date.now()
   })
   await newPost.save();
   return res.status(200).json({message: "post is saved"})
 }
 
+// Changing  post data like name of the post or description
 export const changePost = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
-  const {newDescription, newName, postName}: IChangePost = req.body;
+  const {newDescription, newName, postName, owner}: IChangePost = req.body;
   let updated: IPost | null;
 
   if (!newName)
     updated = await updateOne({user: username, postName: postName}, {description: newDescription});
   else
     updated = await updateOne({user: username, postName: postName}, {description: newDescription, postName: newName});
-  if (!updated) return res.status(404).json({message: "Post with the name doesn't exist"});
+  if (!updated ) return res.status(404).json({message: "Post with the name doesn't exist"});
 
   //successfully updated post
   return res.status(200).json({message: "Updated post"});
 }
 
+// deleting certain post
 export const deletePost = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
   const {postName, owner}: IDeletePost = req.body;

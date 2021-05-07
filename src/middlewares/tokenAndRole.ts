@@ -33,8 +33,7 @@ export const tokenAndRoleChecker = function (allowedRoles: string[]) {
       if (isAllowed)
         next();
     } catch (e) {
-      res.status(403).json({message: "Token is expired, or invalid login again"});
-      return;
+      return res.status(403).json({message: "Token is expired, or invalid login again"});
     }
   }
 }
