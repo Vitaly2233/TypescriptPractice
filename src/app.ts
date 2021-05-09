@@ -33,7 +33,7 @@ app.use(bodyParser.json());
 //routes
 app.use("/home", authRoute);
 app.use("/posts", postsRoute);
-app.use("/comments", comments)
+app.use("/comments", comments);
 app.use("/generate_secret_key", generateKey);
 
 app.listen(3001, async () => {
