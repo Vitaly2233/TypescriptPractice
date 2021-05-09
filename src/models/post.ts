@@ -6,6 +6,7 @@ export interface IPost extends Document{
   description: string;
   comments: string[];
   date: number;
+  isPrivate: boolean;
 }
 
 const PostSchema = new Schema({
@@ -13,7 +14,10 @@ const PostSchema = new Schema({
   postName: String,
   description: String,
   comments: [{type: String, ref: "Comments"}],
-  date: Number
+  date: Number,
+  isPrivate: {type: Boolean, required: true}
 })
+
+
 
 export const Post = model<IPost>("Post", PostSchema)

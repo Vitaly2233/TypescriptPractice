@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc; node ./dist/app.js"
+    "start": "tsc; node ./dist/app.js",
+    "swagger-autogen": "node ./swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +21,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.7",
     "typescript": "^4.2.4"
+  },
+  "devDependencies": {
+    "swagger-autogen": "^2.8.1"
   }
 }

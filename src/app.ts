@@ -1,11 +1,12 @@
 import express from "express";
 // routes
-import authRoute from "./routers/auth";
-import postsRoute from "./routers/posts";
+import authRoute from "./routes/auth";
+import postsRoute from "./routes/posts";
+import comments from "./routes/comments";
 // database
 import mongoose from "mongoose"
 import bodyParser from "body-parser"
-import {generateKey} from "./routers/secretKey";
+import {generateKey} from "./routes/secretKey";
 
 require("dotenv").config()
 
@@ -31,8 +32,9 @@ app.use(bodyParser.json());
 
 //routes
 app.use("/home", authRoute);
-app.use("/posts", postsRoute)
-app.use("/generate_secret_key", generateKey)
+app.use("/posts", postsRoute);
+app.use("/comments", comments)
+app.use("/generate_secret_key", generateKey);
 
 app.listen(3001, async () => {
   await conToDb();

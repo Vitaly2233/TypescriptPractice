@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import {IPost, Post} from "../models/post";
 
 // interfaces
@@ -13,20 +13,20 @@ interface IDeletePost {
   owner?: string;
 }
 
-//controllers functions
-export const seeAllPosts = async (req: Request, res: Response): Promise<Response> => {
-  const allPosts:IPost[]  = await Post.find({});
+
+export const getAllPosts = async (req: Request, res: Response): Promise<Response> => {
+  const allPosts: IPost[] = await Post.find({isPrivate: false});
   return res.status(200).json(allPosts)
 }
 
-export const seePosts = async (req: Request, res: Response): Promise<Response> => {
+export const getMyPosts = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
   const myPosts: IPost[] = await Post.find({user: username});
   return res.json(myPosts)
 }
 
-export const addPost = async (req: Request, res: Response, next: NextFunction): Promise<Response | any> => {
-  const {postName, description} = req.body;
+export const addPost = async (req: Request, res: Response): Promise<Response> => {
+  const {postName, description, isPrivate} = req.body;
   const username = req.user.username;
 
   if (!postName || !description)
@@ -36,13 +36,21 @@ export const addPost = async (req: Request, res: Response, next: NextFunction): 
   if (foundedPosts)
     return res.json({message: "there is already a post with the name"});
 
+  // preparing an object to send to the server
   const newPost: IPost = new Post({
     user: username,
     postName: postName,
     description: description,
-    date: Date.now()
+    date: Date.now(),
+    isPrivate: isPrivate
   })
-  await newPost.save();
+  // sending the object as a new post
+  try {
+    await newPost.save();
+  } catch (e) {
+    console.log("Wrote wrong")
+    return res.status(404).json({message: " probably you didn't wrote will you post be private or not"});
+  }
   return res.status(200).json({message: "post is saved"})
 }
 
@@ -56,13 +64,12 @@ export const changePost = async (req: Request, res: Response): Promise<Response>
     updated = await updateOne({user: username, postName: postName}, {description: newDescription});
   else
     updated = await updateOne({user: username, postName: postName}, {description: newDescription, postName: newName});
-  if (!updated ) return res.status(404).json({message: "Post with the name doesn't exist"});
+  if (!updated) return res.status(404).json({message: "Post with the name doesn't exist"});
 
   //successfully updated post
   return res.status(200).json({message: "Updated post"});
 }
 
-// deleting certain post
 export const deletePost = async (req: Request, res: Response): Promise<Response> => {
   const username = req.user.username;
   const {postName, owner}: IDeletePost = req.body;
@@ -70,6 +77,13 @@ export const deletePost = async (req: Request, res: Response): Promise<Response>
 
   if (deleted) return res.status(200).json({message: "deleted post"});
   else return res.status(404).json({message: "Can't delete post, probably you wrote wrong name of your post"});
+}
+
+
+export const deleteAllPosts = async (req: Request, res: Response): Promise<Response> => {
+  const result = await Post.deleteMany({})
+
+  return res.status(200).json({message: "Successfully deleted"});
 }
 
 // Functions for better looking code
