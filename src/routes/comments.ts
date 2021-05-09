@@ -5,6 +5,6 @@ import {getMyComments} from "../controllers/comments";
 
 const route = express();
 
-route.get("/myComments", tokenAndRoleChecker(["every"]), getMyComments);
+route.get("/addComment", tokenAndRoleChecker(["every"]), getMyComments);
 
 export default route

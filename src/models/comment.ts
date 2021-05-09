@@ -12,4 +12,4 @@ const CommentSchema = new Schema({
   date: Number
 })
 
-export const Post = model<IComment>("Comments", CommentSchema)
+export const Comment = model<IComment>("Comments", CommentSchema)
